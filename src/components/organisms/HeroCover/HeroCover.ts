@@ -1,6 +1,7 @@
 // src/components/organisms/HeroCover/HeroCover.ts
 import { injectCSS } from '../../../utils/dom';
 import type { CardProfile } from '../../../types/card.types';
+import { ShareButton } from '../../atoms/ShareButton/ShareButton'; // <-- Importamos el Átomo
 
 export function HeroCover(profile: CardProfile): HTMLElement {
   // ── 1. CSS primero, ANTES de tocar el DOM ──────────────────
@@ -47,6 +48,8 @@ export function HeroCover(profile: CardProfile): HTMLElement {
       </div>
     </div>
 
+    <div id="hc-actions" class="hc__actions-anchor"></div>
+
     <div class="hc__body" data-animate data-animate-delay="100">
       <div class="hc__name-row">
         <h1 class="hc__name">${person.fullName}</h1>
@@ -77,6 +80,13 @@ export function HeroCover(profile: CardProfile): HTMLElement {
       </div>
     </div>
   `;
+
+  // ── 3. Composición de Átomos ────────────────────────────────
+  // Buscamos el ancla vacía e insertamos el ShareButton hidratado con la data
+  const actionsAnchor = section.querySelector('#hc-actions');
+  if (actionsAnchor) {
+    actionsAnchor.appendChild(ShareButton(profile));
+  }
 
   return section;
 }
@@ -120,50 +130,45 @@ const HERO_CSS = `
     -webkit-backdrop-filter: blur(12px) saturate(1.5);
     border: 1px solid rgba(255,255,255,.26);
     border-radius: 99px;
-    padding: 8px 16px; /* Proporción ligeramente mayor para respirar */
-    
-    /* Centrado flex para alinear el logo y el texto */
+    padding: 8px 16px;
     display: flex; align-items: center; justify-content: center;
-    gap: 8px; /* Separación armoniosa entre logo y texto */
+    gap: 8px;
     min-height: 32px;
-    
     color: #fff;
     line-height: 1;
   }
 
   .hc__company-logo {
-    height: 20px; /* Tamaño visualmente equilibrado (antes 14px) */
+    height: 20px;
     width: auto;
     object-fit: contain;
     display: block;
   }
 
   .hc__company-name {
-    font-size: 13px; /* Legibilidad óptima al lado del logo */
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: .04em;
-    padding-top: 1px; /* Alineación óptica con el logo */
+    padding-top: 1px;
   }
 
   /* ── Avatar superpuesto ── */
   .hc__avatar-anchor {
     position: absolute;
     left: 20px;
-    /* Offset basado en proporción áurea aprox. respecto al tamaño del avatar */
     top: calc(clamp(180px, 48vw, 240px) - 48px);
     z-index: 10;
   }
 
   .hc__avatar-bg {
     position: absolute;
-    inset: -5px; /* Ligeramente más borde para separar del fondo */
+    inset: -5px;
     border-radius: 50%;
     background: var(--paper);
   }
 
   .hc__avatar {
     position: relative; z-index: 1;
-    /* Avatar más grande y proporcional (antes 72-88px, ahora 96-120px) */
     width: clamp(96px, 26vw, 120px);
     height: clamp(96px, 26vw, 120px);
     border-radius: 50%;
@@ -182,12 +187,17 @@ const HERO_CSS = `
     display: block;
   }
 
+  /* ── Acciones a la derecha (Botón Compartir) ── */
+  .hc__actions-anchor {
+    position: absolute;
+    right: var(--section-pad, 20px);
+    /* Se alinea debajo de la imagen de portada, respirando 16px hacia abajo */
+    top: calc(clamp(180px, 48vw, 240px) + 16px);
+    z-index: 10;
+  }
+
   /* ── Body ── */
   .hc__body {
-    /*
-      El padding-top compensa dinámicamente el nuevo tamaño del avatar.
-      Mitad del clamp del avatar + 24px de respiro (espacio aureo respecto al solapamiento).
-    */
     padding-top: calc(clamp(96px, 26vw, 120px) / 2 + 24px);
     padding-left: var(--section-pad);
     padding-right: var(--section-pad);
@@ -200,7 +210,6 @@ const HERO_CSS = `
     align-items: center;
     gap: var(--s-2);
     margin-bottom: var(--s-1);
-    /* Evita overflow en nombres largos */
     flex-wrap: wrap;
   }
 
@@ -210,15 +219,14 @@ const HERO_CSS = `
     letter-spacing: -.03em;
     line-height: 1.1;
     color: var(--ink);
-    /* Permite romper en dos líneas en 320px sin overflow */
     word-break: break-word;
     hyphens: auto;
   }
 
   .hc__badge {
-    width: 20px; height: 20px; /* Levemente escalado para empatar con el nombre */
+    width: 20px; height: 20px;
     flex-shrink: 0;
-    margin-top: 2px; /* alineación óptica */
+    margin-top: 2px;
   }
 
   /* ── Role ── */
@@ -243,7 +251,6 @@ const HERO_CSS = `
     line-height: 1.65;
     color: var(--ink-60);
     margin-bottom: var(--s-6);
-    /* Máximo 3 líneas en mobile — evita mucho texto */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -263,7 +270,6 @@ const HERO_CSS = `
 
   .hc__stat {
     flex: 1;
-    /* Touch target: mínimo 44px de alto */
     min-height: var(--touch-min);
     display: flex;
     flex-direction: column;
@@ -271,11 +277,9 @@ const HERO_CSS = `
     justify-content: center;
     padding: var(--s-3) var(--s-2);
     position: relative;
-    /* Evita que el texto se salga en celdas muy pequeñas */
     min-width: 0;
   }
 
-  /* Separador vertical entre stats */
   .hc__stat + .hc__stat::before {
     content: '';
     position: absolute;
@@ -290,7 +294,6 @@ const HERO_CSS = `
     letter-spacing: -.02em;
     color: var(--ink);
     line-height: 1;
-    /* Evita overflow en valores largos como "+500" */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -304,12 +307,10 @@ const HERO_CSS = `
     text-align: center;
     line-height: 1.3;
     letter-spacing: .02em;
-    /* Permite romper en dos líneas si es muy largo */
     word-break: break-word;
     max-width: 56px;
   }
 
-  /* Desktop: más espacio interno en stats */
   @media (min-width: 380px) {
     .hc__stat { padding: var(--s-4) var(--s-3); }
   }

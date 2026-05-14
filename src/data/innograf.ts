@@ -174,7 +174,7 @@ export const innografCard: CardProfile = {
         // },
     ],
 
-    cardUrl: 'https://card.astostudio.pe/innograf/jorge',
+    cardUrl: 'https://innograf-jorgedelaguila-card.vercel.app',
     poweredBy: {
         name: 'AstoStudios', url: 'https://astostudios.pe',
         logo: '/assets/asto-studio-mark.svg',
