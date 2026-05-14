@@ -1,9 +1,9 @@
 // src/components/atoms/ShareButton/ShareButton.ts
 import { injectCSS } from '../../../utils/dom';
 import type { CardProfile } from '../../../types/card.types';
+import { openShareModal } from '../../organisms/ShareModal/ShareModal'; // <-- Importamos la función
 
 export function ShareButton(profile: CardProfile): HTMLButtonElement {
-    // Inyectamos los estilos de este átomo
     injectCSS(SHARE_BTN_CSS, '__css-share-btn');
 
     const btn = document.createElement('button');
@@ -19,29 +19,9 @@ export function ShareButton(profile: CardProfile): HTMLButtonElement {
     </svg>
   `;
 
-    // Lógica de la Web Share API
-    btn.addEventListener('click', async () => {
-        const shareData = {
-            title: `Tarjeta Digital | ${profile.company.name}`,
-            text: `Hola, accede a mi tarjeta digital interactiva desde el siguiente enlace:\n\n`,
-            url: profile.cardUrl,
-        };
-
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                // Interacción cancelada por el usuario (normal)
-            }
-        } else {
-            // Fallback para Desktop
-            try {
-                await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-                alert('¡Enlace copiado al portapapeles! Ya puedes pegarlo.');
-            } catch (err) {
-                console.error('Error al copiar', err);
-            }
-        }
+    // Al hacer click, levantamos nuestro diseño Premium
+    btn.addEventListener('click', () => {
+        openShareModal(profile);
     });
 
     return btn;
@@ -61,7 +41,6 @@ const SHARE_BTN_CSS = `
     cursor: pointer;
     box-shadow: var(--shadow-sm);
     transition: transform 150ms ease, background 150ms ease;
-    /* Optimización para móviles */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
